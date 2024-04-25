@@ -211,8 +211,9 @@ class GeoTIFFBase {
    * @returns {Promise<ReadRasterResult>} the decoded array(s), with `height` and `width`, as a promise
    */
   async readRasters(options = {}) {
-    const { window: imageWindow, width, height } = options;
+    const { window: imageWindow, width, height, resampleMethod } = options;
     let { resX, resY, bbox } = options;
+
 
     const firstImage = await this.getImage();
     let usedImage = firstImage;
@@ -242,6 +243,9 @@ class GeoTIFFBase {
       // if we have a bbox (or calculated one)
 
       const usedBBox = bbox || imgBBox;
+      //Add a small oversample buffer if resampleMethod is bilinear
+
+      if(resampleMethod)
 
       if (width) {
         if (resX) {
@@ -256,6 +260,8 @@ class GeoTIFFBase {
         resY = (usedBBox[3] - usedBBox[1]) / height;
       }
     }
+
+    
 
     // if resolution is set or calculated, try to get the image with the worst acceptable resolution
     if (resX || resY) {
